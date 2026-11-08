@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>Харди–Вайнберг · задание 27</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--card:#EAF3D3;--ink:#14181a;--mute:#5a6470;--green:#4A7C59;--pill:#EBEDF1;--pillb:#D5D8DE;--acc:#3DD68C;--accbg:#E4F2EA;--accink:#0F6B3F;--field:#fff;--err:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121613;--card:#1f2a21;--ink:#eef2ee;--mute:#9aa6a0;--green:#6db386;--pill:#232a26;--pillb:#35403a;--accbg:#1d3b2b;--accink:#7ee0ad;--field:#161c18;--err:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121613;--card:#1f2a21;--ink:#eef2ee;--mute:#9aa6a0;--green:#6db386;--pill:#232a26;--pillb:#35403a;--accbg:#1d3b2b;--accink:#7ee0ad;--field:#161c18;--err:#ff8a80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.35}
+.w{max-width:560px;margin:0 auto;padding:16px 18px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.logo{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:700}.logo span{font-weight:400}
+.ib{width:44px;height:44px;border-radius:50%;border:2px solid var(--pillb);background:var(--pill);color:var(--ink);font-size:18px;cursor:pointer}
+h1{font-size:32px;margin:0;font-weight:700;letter-spacing:-.5px}
+.sub{color:var(--mute);font-size:19px;margin:4px 0 18px}
+.pills{display:flex;gap:10px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none}
+.pill{flex:none;border:3px solid var(--pillb);background:var(--pill);color:var(--ink);border-radius:20px;padding:11px 20px;font:700 15px Montserrat,sans-serif;cursor:pointer}
+.pill.on{border-color:var(--acc);background:var(--accbg);color:var(--accink)}
+.card{background:var(--card);border-radius:28px;padding:20px;margin-bottom:14px}
+.card h2{font-size:13px;text-transform:lowercase;color:var(--mute);margin:0 0 12px;font-weight:600;letter-spacing:.3px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 6px;font-weight:500}
+input,select{width:100%;font:600 16px Montserrat,sans-serif;padding:12px 14px;border-radius:16px;border:2px solid transparent;background:var(--field);color:var(--ink);outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.step{display:flex;align-items:center;gap:12px}.step b{font-size:26px;min-width:40px;text-align:center}
+.sb{width:44px;height:44px;border-radius:50%;border:0;background:var(--green);color:#fff;font-size:22px;cursor:pointer}
+.ev{display:grid;grid-template-columns:1fr 1fr 38px;gap:6px;margin-bottom:12px;align-items:center}
+.ev select,.ev input{padding:10px 8px;font-size:14px}
+.x{border:0;background:none;color:var(--mute);font-size:22px;cursor:pointer}
+.add{border:2px dashed var(--green);background:none;color:var(--green);border-radius:16px;padding:10px;width:100%;font:700 14px Montserrat,sans-serif;cursor:pointer;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.t{background:var(--field);border-radius:20px;padding:14px}
+.t b{display:block;font-size:12px;color:var(--mute);font-weight:600}
+.t .v{font-size:20px;font-weight:700;display:block;margin:4px 0;word-break:break-all}
+.t small{color:var(--mute);font-size:11px}
+.t.p{grid-column:1/-1}
+.err{color:var(--err);font-weight:600;font-size:14px}
+.note{color:var(--mute);font-size:12px;margin-top:10px}
+.sc{overflow-x:auto}
+svg text{fill:var(--ink);font-family:Montserrat,sans-serif}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;margin-top:8px}.lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.rh h2{margin:0}.clr{border:2px solid var(--green);background:none;color:var(--green);border-radius:14px;padding:7px 14px;font:700 13px Montserrat,sans-serif;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="top"><div class="logo"><svg width="48" height="48" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="miter" aria-hidden="true"><circle cx="22" cy="22" r="21"/><path d="M14.5 8H18.5V19H25V8H29V35H25V24H18.5V35H14.5Z"/><path d="M14.5 2.4V8M6.3 8H14.5M29 35V41.8M29 35H38.5"/></svg><div>НОО.<span>Тренажёры</span></div></div><button class="ib" id="th" aria-label="тема">◐</button></div>
+<h1>харди–вайнберг</h1>
+<div class="sub">задание 27 · калькулятор</div>
+<div class="pills"><button class="pill on" data-m="1">равновесие</button><button class="pill" data-m="2">вселение и гибель</button></div>
+
+<div class="card"><h2>параметры</h2>
+<div class="pills" style="padding-bottom:0"><button class="pill on" data-d="c">полное доминирование</button><button class="pill" data-d="i">неполное</button></div>
+<label>знаков после запятой (1–10)</label>
+<div class="step"><button class="sb" id="dm">−</button><b id="dv">4</b><button class="sb" id="dp">+</button></div></div>
+
+<div class="card"><h2>дано</h2>
+<label>что известно</label><select id="kn"></select>
+<div class="row"><div><label>значение</label><input id="val" inputmode="decimal" placeholder="например 0,09"></div>
+<div><label>в чём задано</label><select id="un"><option value="f">доля (0–1)</option><option value="pc">проценты, %</option><option value="n">число особей</option></select></div></div>
+<label id="nl">общее число особей N (необязательно)</label><input id="N" inputmode="decimal" placeholder="например 10000"></div>
+
+<div class="card"><h2>фенотипы (по желанию)</h2><div id="phl"></div></div>
+
+<div class="card" id="evc" style="display:none"><h2>изменение численности</h2><div id="evl"></div><button class="add" id="ea">+ добавить событие</button>
+<div class="note">Для A_ особи делятся между AA и Aa в равновесной пропорции. Проценты считаются от исходной численности: «от всей популяции» — от N, «от группы» — от числа особей выбранного генотипа.</div></div>
+
+<div class="card"><div class="rh"><h2>результат</h2><button class="clr" id="cl">очистить</button></div><div id="out"></div></div>
+<div class="card"><h2>частоты генотипов</h2><div class="sc" id="ch"></div><div class="lg" id="lg"></div></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),G=['AA','Aa','aa'];
+const COL={AA:'#8866C4',Aa:'#4A7C59',aa:'#BC2B3E'};
+const inv=h=>'#'+[1,3,5].map(i=>(255-parseInt(h.substr(i,2),16)).toString(16).padStart(2,'0')).join('');
+const S={m:1,dom:'c',d:4,ev:[{a:'in',g:'AA',n:''}],ph:{A_:'',aa:'',AA:'',Aa:''}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const phOf=g=>S.dom==='c'?(g==='aa'?S.ph.aa:S.ph.A_):S.ph[g];
+const phn=g=>(S.dom==='c'?['A_','aa']:G).includes(g)&&S.ph[g]?' · '+esc(S.ph[g]):'';
+function phRows(){
+ const defs=S.dom==='c'?[['A_','доминантный фенотип (A_)'],['aa','рецессивный фенотип (aa)']]:[['AA','фенотип AA'],['Aa','фенотип Aa'],['aa','фенотип aa']];
+ $('#phl').innerHTML=defs.map(d=>`<label>${d[1]}</label><input data-ph="${d[0]}" placeholder="например: красные цветки" value="${esc(S.ph[d[0]])}">`).join('');
+}
+const num=v=>parseFloat(String(v).replace(',','.').replace(/\s/g,''));
+const trimAll=s=>s.includes('.')?s.replace(/0+$/,'').replace(/\.$/,''):s;
+const trim=s=>S.d>=10?s:trimAll(s);
+const fmt=(x,d=S.d)=>trim(x.toFixed(d)).replace('.',',');
+const cnt=x=>String(Number(x.toFixed(Math.min(S.d,2)))).replace('.',',');
+function knownOpts(){
+ const c=S.dom==='c',o=[['q','частота аллеля a (q)'],['p','частота аллеля A (p)'],['aa',c?'доля особей с рецессивным признаком (aa)':'доля генотипа aa'],['AA','доля генотипа AA']];
+ if(c)o.push(['dom','доля особей с доминантным признаком (A_)']);
+ const k=$('#kn'),cur=k.value;k.innerHTML=o.map(a=>`<option value="${a[0]}">${a[1]}</option>`).join('');
+ if(o.some(a=>a[0]===cur))k.value=cur;
+}
+function rows(){
+ const c=S.dom==='c';
+ $('#evl').innerHTML=S.ev.map((e,i)=>`<div class="ev" data-i="${i}"><select data-k="a"><option value="in"${e.a==='in'?' selected':''}>вселились</option><option value="out"${e.a==='out'?' selected':''}>погибли</option></select><select data-k="g">${G.map(g=>`<option value="${g}"${e.g===g?' selected':''}>${g}${phn(g)}</option>`).join('')}${c?`<option value="A_"${e.g==='A_'?' selected':''}>A_ (дом.)${phn('A_')}</option>`:''}</select><button class="x" data-x="${i}">×</button><input data-k="n" inputmode="decimal" placeholder="число" value="${e.n}"><select data-k="u">${[['n','особей'],['N','% от всей популяции'],['g','% от группы']].map(o=>`<option value="${o[0]}"${(e.u||'n')===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select></div>`).join('');
+}
+function tile(l,x,N,cls=''){
+ const pc=trim((x*100).toFixed(Math.max(0,S.d-2))).replace('.',',');
+ return `<div class="t ${cls}"><b>${l}</b><span class="v">${fmt(x)}</span><small>${pc} %${N?' · ≈ '+cnt(x*N)+' особей':''}</small></div>`}
+function pheno(f,N){
+ const n=(k,d)=>S.ph[k]?`${esc(S.ph[k])} (${k})`:d;
+ return S.dom==='c'?tile(n('A_','фенотип A_ (доминантный)'),f.AA+f.Aa,N)+tile(n('aa','фенотип aa (рецессивный)'),f.aa,N)
+ :tile(n('AA','фенотип AA'),f.AA,N)+tile(n('Aa','фенотип Aa (промежуточный)'),f.Aa,N)+tile(n('aa','фенотип aa'),f.aa,N)}
+function solve(){
+ let x=num($('#val').value),u=$('#un').value,N=num($('#N').value),k=$('#kn').value;
+ if(isNaN(x))return{err:'Введите значение.'};
+ if(u==='pc')x/=100;
+ if(u==='n'){if(!(N>0))return{err:'Для числа особей укажите общее число N.'};x/=N}
+ if(x<0||x>1)return{err:'Доля должна быть от 0 до 1.'};
+ const q=k==='q'?x:k==='p'?1-x:k==='aa'?Math.sqrt(x):k==='AA'?1-Math.sqrt(x):Math.sqrt(1-x);
+ return{q,N:N>0?N:0}}
+const sers=[];
+function calc(){
+ sers.length=0;const r=solve(),o=$('#out');
+ if(r.err){o.innerHTML=`<div class="err">${r.err}</div>`;draw();return}
+ const q=r.q,p=1-q;let N=r.N;
+ const f0={AA:p*p,Aa:2*p*q,aa:q*q};
+ if(S.m===1){
+  o.innerHTML=`<div class="grid">${tile("частота p (аллель A)",p,0)}${tile('частота q (аллель a)',q,N&&0)}${G.map(g=>tile('генотип '+g,f0[g],N)).join('')}${pheno(f0,N)}</div><div class="note">p² + 2pq + q² = 1</div>`;
+  sers.push({n:'',v:G.map(g=>f0[g]),c:G.map(g=>COL[g])});draw();return}
+ if(!(N>0)){o.innerHTML='<div class="err">Укажите исходное число особей N.</div>';draw();return}
+ const n0={AA:N*f0.AA,Aa:N*f0.Aa,aa:N*f0.aa},n1={...n0};
+ for(const e of S.ev){const c0=num(e.n);if(!(c0>0))continue;const s=e.a==='in'?1:-1,u=e.u||'n',gb=e.g==='A_'?n0.AA+n0.Aa:n0[e.g],c=u==='N'?N*c0/100:u==='g'?gb*c0/100:c0;
+  if(e.g==='A_'){const t=n0.AA+n0.Aa;if(t<=0){o.innerHTML='<div class="err">В равновесной популяции нет особей A_.</div>';draw();return}n1.AA+=s*c*n0.AA/t;n1.Aa+=s*c*n0.Aa/t}else n1[e.g]+=s*c}
+ for(const g of G)if(n1[g]<-1e-9){o.innerHTML=`<div class="err">Погибло больше особей ${g}, чем было (${cnt(n0[g])}).</div>`;draw();return}
+ const N1=n1.AA+n1.Aa+n1.aa;
+ if(!(N1>0)){o.innerHTML='<div class="err">В популяции не осталось особей.</div>';draw();return}
+ const f1={AA:n1.AA/N1,Aa:n1.Aa/N1,aa:n1.aa/N1},p1=(2*n1.AA+n1.Aa)/(2*N1),q1=1-p1,fe={AA:p1*p1,Aa:2*p1*q1,aa:q1*q1};
+ o.innerHTML=`<div class="grid"><div class="t p"><b>численность</b><span class="v">${cnt(N)} → ${cnt(N1)}</span><small>${G.map(g=>g+': '+cnt(n0[g])+' → '+cnt(n1[g])).join(' · ')}</small></div>
+ ${tile("частота p (A) после",p1,0)}${tile('частота q (a) после',q1,N1&&0)}${G.map(g=>tile('генотип '+g+' после',f1[g],N1)).join('')}${pheno(f1,N1)}</div>
+ <h2 style="margin:18px 0 10px">при установлении равновесия (следующее поколение)</h2><div class="grid">${G.map(g=>tile(g,fe[g],N1)).join('')}</div>`;
+ sers.push({n:'до',v:G.map(g=>f0[g]),c:G.map(g=>COL[g])},{n:'после',v:G.map(g=>f1[g]),c:G.map(g=>inv(COL[g]))});draw()}
+function draw(){
+ const el=$('#ch'),lg=$('#lg');
+ if(!sers.length){el.innerHTML='<div class="note">Введите данные, чтобы увидеть график.</div>';lg.innerHTML='';return}
+ const W=340,H=228,L=34,B=46,T=16,gw=(W-L-8)/3,ns=sers.length,bw=ns===1?40:30,ph=H-B-T;
+ const mx=Math.max(...sers.flatMap(s=>s.v)),ym=Math.min(1,Math.max(.1,Math.ceil(mx*10)/10));
+ let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="график">`;
+ [0,.5,1].forEach(t=>{const y=T+ph*(1-t);s+=`<line x1="${L}" x2="${W-4}" y1="${y}" y2="${y}" stroke="currentColor" opacity=".15"/><text x="${L-5}" y="${y+3}" font-size="9" text-anchor="end">${trimAll((ym*t).toFixed(2)).replace('.',',')}</text>`});
+ G.forEach((g,i)=>{const cx=L+gw*i+gw/2,x0=cx-bw*ns/2;
+  sers.forEach((se,j)=>{const v=se.v[i],h=ph*v/ym,x=x0+j*bw,y=T+ph-h;
+   s+=`<rect x="${x+2}" y="${y}" width="${bw-4}" height="${Math.max(h,0)}" rx="6" fill="${se.c[i]}"/><text x="${x+bw/2}" y="${y-4}" font-size="9" font-weight="700" text-anchor="middle">${fmt(v,Math.min(S.d,4))}</text>`});
+  const pn=phOf(g);s+=`<text x="${cx}" y="${H-26}" font-size="12" font-weight="700" text-anchor="middle">${g}</text>`+(pn?`<text x="${cx}" y="${H-11}" font-size="9" text-anchor="middle" opacity=".75">${esc(pn.length>17?pn.slice(0,16)+'…':pn)}</text>`:'')});
+ el.innerHTML=s+'</svg>';
+ lg.innerHTML=ns===1?G.map(g=>`<span><i style="background:${COL[g]}"></i>${g}${phOf(g)?' · '+esc(phOf(g)):''}</span>`).join(''):G.map(g=>sers.map(se=>`<span><i style="background:${se.c[G.indexOf(g)]}"></i>${g}${phOf(g)?' · '+esc(phOf(g)):''} ${se.n}</span>`).join('')).join('')}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.m){S.m=+t.dataset.m;document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b===t));$('#evc').style.display=S.m===2?'':'none';$('#nl').textContent=S.m===2?'исходное число особей N':'общее число особей N (необязательно)';calc()}
+ else if(t.dataset.d){S.dom=t.dataset.d;document.querySelectorAll('[data-d]').forEach(b=>b.classList.toggle('on',b===t));if(S.dom==='i')S.ev.forEach(v=>{if(v.g==='A_')v.g='AA'});knownOpts();phRows();rows();calc()}
+ else if(t.id==='dm'||t.id==='dp'){S.d=Math.min(10,Math.max(1,S.d+(t.id==='dp'?1:-1)));$('#dv').textContent=S.d;calc()}
+ else if(t.id==='cl'){$('#val').value='';$('#N').value='';S.ev=[{a:'in',g:'AA',n:''}];S.ph={A_:'',aa:'',AA:'',Aa:''};phRows();rows();calc()}
+ else if(t.id==='ea'){S.ev.push({a:'in',g:'AA',n:''});rows()}
+ else if(t.dataset.x!==undefined){S.ev.splice(+t.dataset.x,1);rows();calc()}
+ else if(t.id==='th'){const r=document.documentElement,dk=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dk?'light':'dark'}
+});
+document.addEventListener('input',e=>{
+ const r=e.target.closest('.ev');if(r){S.ev[+r.dataset.i][e.target.dataset.k]=e.target.value}
+ if(e.target.dataset.ph){S.ph[e.target.dataset.ph]=e.target.value;rows()}
+ calc()});
+knownOpts();phRows();rows();calc();
+try{const w=window.Telegram&&Telegram.WebApp;if(w){w.ready();w.expand();document.documentElement.dataset.theme=w.colorScheme;w.onEvent("themeChanged",()=>{document.documentElement.dataset.theme=w.colorScheme})}}catch(e){}
+</script>
+</body>
+</html>
