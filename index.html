@@ -96,6 +96,8 @@ table.pt{border-collapse:collapse;font-size:12px;background:var(--field)}
 .pc .or2 input,.pc .or2 select{margin:0;padding:10px 8px;font-size:14px;background:var(--pill)}
 .sch sup{font-size:.7em}
 .xl{display:flex;align-items:center;justify-content:center;gap:12px;font-size:30px;font-weight:700;color:var(--green)}
+.xl .yb{border:0;background:none;font:inherit;font-size:30px;font-weight:700;color:var(--green);cursor:pointer;padding:0;line-height:1}
+.xl sup,.yb sup{font-size:.5em}
 </style>
 </head>
 <body>
@@ -167,7 +169,7 @@ function pheno(f,N){
  const n=(k,d)=>S.ph[k]?`${esc(S.ph[k])} (${k})`:d;
  return S.dom==='c'?tile(n('A_','фенотип A_ (доминантный)'),f.AA+f.Aa,N)+tile(n('aa','фенотип aa (рецессивный)'),f.aa,N)
  :tile(n('AA','фенотип AA'),f.AA,N)+tile(n('Aa','фенотип Aa (промежуточный)'),f.Aa,N)+tile(n('aa','фенотип aa'),f.aa,N)}
-function solve(){
+function hwSolve(){
  let x=num($('#val').value),u=$('#un').value,N=num($('#N').value),k=$('#kn').value;
  if(isNaN(x))return{err:'Введите значение.'};
  if(u==='pc')x/=100;
@@ -177,7 +179,7 @@ function solve(){
  return{q,N:N>0?N:0}}
 const sers=[];
 function calc(){
- sers.length=0;const r=solve(),o=$('#out');
+ sers.length=0;const r=hwSolve(),o=$('#out');
  if(r.err){o.innerHTML=`<div class="err">${r.err}</div>`;draw();return}
  const q=r.q,p=1-q;let N=r.N;
  const f0={AA:p*p,Aa:2*p*q,aa:q*q};
@@ -241,7 +243,7 @@ function load(){try{const d=JSON.parse(localStorage.getItem(SK)||'{}');(d.FL||[]
 function gRender(){
  $('#gl').innerHTML=((FL.length||AM.length)?`<div class="card"><h2>память</h2>${AM.length?`<div class="note" style="margin:0 0 8px">Запомненные аллели (доминантный · рецессивный)</div><div class="chips">${AM.map(a=>`<span class="chip">${esc(a.L)} — ${esc(a.d)}${a.r?' · '+esc(a.l)+' — '+esc(a.r):''}</span>`).join('')}</div>`:''}${FL.length?`<div class="note" style="margin:12px 0 8px">Отмеченные генотипы</div>`:''}<div class="chips">${FL.map((f,i)=>`<span class="chip">⚑ ${esc(f.g)} · ${esc(Object.values(f.n).join(' '))}<button data-g="fr" data-it="${i}" aria-label="Убрать">×</button></span>`).join('')}</div><div class="note">В ячейке родителя выберите «⚑ Из отмеченных…», чтобы использовать генотип в новом скрещивании.</div><button class="clr" data-g="mc" style="margin-top:12px">Очистить память</button></div>`:'')+X.map((x,i)=>{
   const c=`data-c="${i}"`;
-  const par=x.p.map((q,j)=>`<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f','x'].map(s=>`<button data-g="sx" ${c} data-p="${j}" data-s="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><div class="sx" style="margin-top:8px"><button data-g="pm" ${c} data-p="${j}" data-v="p" class="t ${q.md==='g'?'':'on'}">Признаки</button><button data-g="pm" ${c} data-p="${j}" data-v="g" class="t ${q.md==='g'?'on':''}">Генотип</button></div>${q.md==='g'?`<input ${c} data-p="${j}" data-t="ga" placeholder="Генотип А, например Aa" value="${esc(q.ga||'')}"><input ${c} data-p="${j}" data-t="gb" placeholder="Генотип B, например Bb" value="${esc(q.gb||'')}">${(q.a||q.b)?`<div class="note" style="margin:8px 0 0">Фенотип: ${esc([q.a,q.b].filter(Boolean).join(' '))}</div>`:''}`:`<input ${c} data-p="${j}" data-t="a" placeholder="Признак А или генотип" value="${esc(q.a)}"><input ${c} data-p="${j}" data-t="b" placeholder="Признак B или генотип" value="${esc(q.b)}">`}${FL.length?`<select data-pick="1" ${c} data-p="${j}"><option value="">⚑ Из памяти…</option>${FL.map((f,k)=>`<option value="${k}">${esc(f.g)} — ${esc(Object.values(f.n).join(' '))}</option>`).join('')}</select>`:''}</div>`).join('');
+  const par=x.p.map((q,j)=>`<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f','x'].map(s=>`<button data-g="sx" ${c} data-p="${j}" data-s="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><div class="sx" style="margin-top:8px"><button data-g="pm" ${c} data-p="${j}" data-v="p" class="t ${q.md==='g'?'':'on'}">Признаки</button><button data-g="pm" ${c} data-p="${j}" data-v="g" class="t ${q.md==='g'?'on':''}">Генотип</button></div>${q.md==='g'?`<input ${c} data-p="${j}" data-t="ga" placeholder="Генотип А, например Aa" value="${esc(q.ga||'')}"><input ${c} data-p="${j}" data-t="gb" placeholder="Генотип B, например Bb" value="${esc(q.gb||'')}">${(q.a||q.b)?`<div class="note" style="margin:8px 0 0">Фенотип: ${esc([q.a,q.b].filter(Boolean).join(' '))}</div>`:''}`:`<input ${c} data-p="${j}" data-t="a" placeholder="Признак А или генотип" value="${esc(q.a)}"><input ${c} data-p="${j}" data-t="b" placeholder="Признак B или генотип" value="${esc(q.b)}">`}${FL.some(f=>!f.type)?`<select data-pick="1" ${c} data-p="${j}"><option value="">⚑ Из памяти…</option>${FL.map((f,k)=>f.type?'':`<option value="${k}">${esc(f.g)} — ${esc(Object.values(f.n).join(' '))}</option>`).join('')}</select>`:''}</div>`).join('');
   const off=x.md==='p'?x.rows.map((r,k)=>`<div class="or"><input ${c} data-r="${k}" data-f="a" placeholder="Признак А" value="${esc(r.a)}"><input ${c} data-r="${k}" data-f="b" placeholder="Признак B" value="${esc(r.b)}"><input ${c} data-r="${k}" data-f="n" inputmode="decimal" placeholder="Число" value="${esc(r.n)}"><button class="x" data-g="dr" ${c} data-r="${k}">×</button></div>`).join('')+`<button class="add" data-g="ar" ${c}>+ строка</button>`:`<div class="rr"><input ${c} data-ratio="1" inputmode="text" autocapitalize="off" placeholder="Например 3:1 или 9:3:3:1" value="${esc(x.ratio)}"><button class="cb" data-g="co" ${c} aria-label="Двоеточие">:</button></div><div class="note" style="margin-top:8px">Введите числа потомков через двоеточие: сколько особей каждого фенотипа, например 3:1 (3 доминантных к 1 рецессивному) или 9:3:3:1 (дигибридное скрещивание). Разделять можно также пробелом, «/», «-» или словом «к». Кнопка «:» вставляет двоеточие.</div><div class="note" style="margin:8px 0 0">Числа через двоеточие, «/» или пробел.</div>`;
   return `<div class="card"><div class="gh"><h2>Скрещивание ${i+1}</h2><button class="clr" data-g="tr" ${c} aria-label="Очистить">🗑</button></div><div class="pg">${par}</div><div class="pc" style="margin-top:10px"><small>Потомство (можно не заполнять, если у обоих родителей известен генотип)</small><div class="sx" style="margin-bottom:8px"><button data-g="md" ${c} data-v="p" class="t ${x.md==='p'?'on':''}">Фенотипы</button><button data-g="md" ${c} data-v="r" class="t ${x.md==='r'?'on':''}">Расщепление</button></div>${off}</div><button class="go" data-g="go" ${c}>Скрестить</button><div>${(x.res||'').replace(/\{\{F(\d+)\}\}/g,(m,n)=>{const it=x.items&&x.items[+n];return it?`<button class="fg${FL.some(f=>f.key===it.key)?' on':''}" data-g="fl" ${c} data-it="${n}" aria-label="Отметить генотип">⚑</button>`:''})}</div></div>`}).join('');
 }
@@ -263,7 +265,7 @@ $('#gen').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!
  else if(g==='fr')FL.splice(+b.dataset.it,1);
  else if(g==='mc'){FL.length=0;AM.length=0}
  else if(g==='go')x.res=solve(x);
- save();gRender()});
+ save();gRender();lRender();zRender()});
 function hyps(nm,q,kc=[]){
  const o=[],A=[nm[0]||null,nm[1]||null],g=k=>k==2?[1]:k==1?[1,0]:[0];
  for(const l of[-1,2,0])for(const d of[0,1])for(let k1=2;k1>=0;k1--)for(let k2=2;k2>=0;k2--){
@@ -354,7 +356,7 @@ const rs=pv.map(e=>e[1]/gg).join(' : '),sm=pv.reduce((a,e)=>a+e[1]/gg,0),grp={};
 <div class="note">Расщепление по фенотипу: ${rs}${lt?' (с учётом гибели особей)':''}</div>${ex}${note}`}
 gRender();
 
-const LN=()=>({p:[{s:'f',x:2,c:[['',''],['','']]},{s:'m',x:2,c:[['',''],['','']]}],n:['','','',''],nums:'',ph:'',r:'',a:['','','',''],rows:[{a:'',b:'',n:''},{a:'',b:'',n:''}],res:''});
+const LN=()=>({p:[{s:'f',m:'g',t:['',''],x:2,c:[['',''],['','']]},{s:'m',m:'g',t:['',''],x:2,c:[['',''],['','']]}],n:['','','',''],nums:'',ph:'',r:'',a:['','','',''],rows:[{a:'',b:'',n:''},{a:'',b:'',n:''}],res:''});
 const LX=[LN()];
 function lLet(x,i){for(const q of x.p)for(const h of q.c){const v=String(h[i]).trim();if(v)return v.toLowerCase()}return'ab'[i]}
 function lLab(x,c){const d1=c<2,d2=c%2===0,l1=lLet(x,0),l2=lLet(x,1);return (d1?l1.toUpperCase()+'_':l1+l1)+(d2?l2.toUpperCase()+'_':l2+l2)+' · '+[d1?x.n[0]:x.n[1],d2?x.n[2]:x.n[3]].filter(Boolean).map(esc).join(' ')}
@@ -373,18 +375,19 @@ function lMapAll(){
    pos[n]=pos[k]+dir*d;if(am)amb=true;pend.splice(i,1);prog=true;break}}}
  if(Object.keys(pos).length<3)return '';
  return `<div class="card"><h2>генетическая карта по всем скрещиваниям</h2><div class="sc">${mapSvg(pos)}</div><div class="note" style="margin:0">Расстояния даны в морганидах (М); 1 М = 1 % кроссинговера.${amb?' Порядок генов по одному скрещиванию однозначно не определяется: показан один из двух зеркальных вариантов — для уточнения нужно скрещивание, где известно расстояние между крайними генами.':''}${pend.length?' Скрещивания без общих генов на карту не вошли.':''}</div></div>`}
-function lRender(){lRender0();$('#ll').insertAdjacentHTML('beforeend',lMapAll())}
+function lRender(){lRender0();$('#ll').insertAdjacentHTML('afterbegin',memCard());$('#ll').insertAdjacentHTML('beforeend',lMapAll())}
 function lRender0(){
  $('#ll').innerHTML=LX.map((x,i)=>{
   const c=`data-c="${i}"`,al=(j,h)=>[0,1].map(k=>`<input class="al" maxlength="1" ${c} data-j="${j}" data-h="${h}" data-i="${k}" placeholder="${'ABab'[h*2+k]}" value="${esc(x.p[j].c[h][k])}" aria-label="Аллель">`).join('');
   const svg='<svg width="90" height="104" viewBox="0 0 90 104" fill="none" stroke="var(--green)" stroke-linecap="round" aria-hidden="true"><path d="M28 6V98M62 6V98" stroke-width="4"/><path d="M17 26H39M51 26H73M17 78H39M51 78H73" stroke-width="3"/></svg>';
-  const par=x.p.map((q,j)=>`<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f','x'].map(s=>`<button data-l="sx" ${c} data-j="${j}" data-v="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><small style="margin:10px 0 6px">Кроссинговер</small><div class="sx">${[['2','Авто'],['1','Есть'],['0','Нет']].map(o=>`<button data-l="xo" ${c} data-j="${j}" data-v="${o[0]}" class="t ${String(q.x)===o[0]?'on':''}">${o[1]}</button>`).join('')}</div><div class="chr"><div class="col">${al(j,0)}</div>${svg}<div class="col">${al(j,1)}</div></div></div>`).join('');
+  const par=x.p.map((q,j)=>{const gm=q.m!=='p';return `<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f','x'].map(s=>`<button data-l="sx" ${c} data-j="${j}" data-v="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><div class="sx" style="margin-top:8px"><button data-l="pm" ${c} data-j="${j}" data-v="g" class="t ${gm?'on':''}">Генотип</button><button data-l="pm" ${c} data-j="${j}" data-v="p" class="t ${gm?'':'on'}">Признаки</button></div><small style="margin:10px 0 6px">Кроссинговер</small><div class="sx">${[['2','Авто'],['1','Есть'],['0','Нет']].map(o=>`<button data-l="xo" ${c} data-j="${j}" data-v="${o[0]}" class="t ${String(q.x)===o[0]?'on':''}">${o[1]}</button>`).join('')}</div>${gm?`<div class="chr"><div class="col">${al(j,0)}</div>${svg}<div class="col">${al(j,1)}</div></div>`:`<input ${c} data-j="${j}" data-lt="0" placeholder="Признак 1" value="${esc(q.t[0])}"><input ${c} data-j="${j}" data-lt="1" placeholder="Признак 2" value="${esc(q.t[1])}">`}${FL.some(f=>f.type==='l')?`<select data-lpick="1" ${c} data-j="${j}"><option value="">⚑ Из памяти…</option>${FL.map((f,k)=>f.type==='l'?`<option value="${k}">${esc(f.g)}${f.ph&&f.ph.filter(Boolean).length?' — '+esc(f.ph.filter(Boolean).join(' ')):''}</option>`:'').join('')}</select>`:''}</div>`}).join('');
   const nm=['Доминантный признак 1','Рецессивный признак 1','Доминантный признак 2','Рецессивный признак 2'].map((p,k)=>`<input ${c} data-ni="${k}" placeholder="${p}" value="${esc(x.n[k])}">`).join('');
   const sel='';
-  return `<div class="card"><div class="gh"><h2>Скрещивание ${i+1}</h2><button class="clr" data-l="tr" ${c} aria-label="Удалить">🗑</button></div><div class="pg">${par}</div><div class="pc" style="margin-top:10px"><small>Признаки (по желанию)</small><div class="pg">${nm}</div></div><div class="pc" style="margin-top:10px"><small>Потомство</small><input ${c} data-lnums placeholder="Расщепление, например 3:1 или 1:1" value="${esc(x.nums)}"><input ${c} data-lph placeholder="Особи потомства: 132 11 140 14" value="${esc(x.ph||'')}"><input ${c} data-lr inputmode="decimal" placeholder="Кроссинговер, % (если известен)" value="${esc(x.r)}"><div class="note" style="margin:10px 0 6px">Верхнее поле — расщепление (3:1, 1:1 и т. п.). Нижнее — число особей с каждым фенотипом (2–4 числа; они обозначаются буквами a, b, c, d в порядке ввода): какие особи рекомбинантные, калькулятор определит сам: нерекомбинантные — два больших числа, рекомбинантные — два меньших.</div>${sel}</div><button class="go" data-l="go" ${c}>Скрестить</button><div>${x.res}</div></div>`}).join('')}
+  return `<div class="card"><div class="gh"><h2>Скрещивание ${i+1}</h2><button class="clr" data-l="tr" ${c} aria-label="Удалить">🗑</button></div><div class="pg">${par}</div><div class="pc" style="margin-top:10px"><small>Потомство</small><input ${c} data-lnums placeholder="Расщепление, например 3:1 или 1:1" value="${esc(x.nums)}"><input ${c} data-lph placeholder="Особи потомства: 132 11 140 14" value="${esc(x.ph||'')}"><input ${c} data-lr inputmode="decimal" placeholder="Кроссинговер, % (если известен)" value="${esc(x.r)}"><div class="note" style="margin:10px 0 6px">Верхнее поле — расщепление (3:1, 1:1 и т. п.). Нижнее — число особей с каждым фенотипом (2–4 числа; они обозначаются буквами a, b, c, d в порядке ввода): какие особи рекомбинантные, калькулятор определит сам: нерекомбинантные — два больших числа, рекомбинантные — два меньших.</div>${sel}</div><button class="go" data-l="go" ${c}>Скрестить</button><div>${flRep(x.res,x,c,'l')}</div></div>`}).join('')}
 $('#lk').addEventListener('input',e=>{const t=e.target,x=LX[+t.dataset.c];if(!x)return;const d=t.dataset;
  if(d.h!==undefined)x.p[+d.j].c[+d.h][+d.i]=t.value;
- else if(d.ni!==undefined)x.n[+d.ni]=t.value;
+ else if(d.lt!==undefined)x.p[+d.j].t[+d.lt]=t.value;
+ else if('lpick' in d){const f=FL[+t.value];if(f&&f.type==='l'){const q=x.p[+d.j];q.m='g';q.c=f.c.map(h=>h.slice());q.t=(f.ph||['','']).slice()}lRender()}
  else if('lnums' in d)x.nums=t.value;
  else if('lph' in d)x.ph=t.value;
  else if('lr' in d)x.r=t.value;
@@ -394,16 +397,32 @@ $('#lk').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b
  else if(g==='tr'){if(LX.length>1)LX.splice(i,1);else LX[0]=LN()}
  else if(g==='sx')x.p[+d.j].s=d.v;
  else if(g==='xo')x.p[+d.j].x=+d.v;
+ else if(g==='pm')x.p[+d.j].m=d.v;
+ else if(g==='fl')toggleFL(x,+d.it);
  else if(g==='ar'){if(x.rows.length<4)x.rows.push({a:'',b:'',n:''})}
  else if(g==='dr'){if(x.rows.length>2)x.rows.splice(+d.rk,1)}
  else if(g==='go')x.res=lsolve(x);
- lRender()});
+ save();lRender();zRender();gRender()});
 $('#gen').addEventListener('click',e=>{const b=e.target.closest('[data-gt]');if(!b)return;
  document.querySelectorAll('[data-gt]').forEach(p=>p.classList.toggle('on',p===b));$('#gu').hidden=b.dataset.gt!=='u';$('#lk').hidden=b.dataset.gt!=='l';$('#sk').hidden=b.dataset.gt!=='s'});
+function lDerive(x){
+ const P=x.p,out=P.map(q=>q.c.map(h=>h.map(v=>String(v).trim()))),nn=['','','',''];
+ const up=v=>v&&v===v.toUpperCase()&&v!==v.toLowerCase();
+ const letter=i=>{for(let j=0;j<2;j++)if(P[j].m!=='p')for(const h of out[j])if(h[i])return h[i].toLowerCase();return 'ab'[i]};
+ for(let j=0;j<2;j++)if(P[j].m==='p'&&!(String(P[j].t[0]).trim()&&String(P[j].t[1]).trim()))return `Родитель ${j+1}: впишите оба признака или переключитесь на «Генотип».`;
+ for(const i of [0,1]){
+  const n=P.map(q=>String(q.t[i]||'').trim()),lt=letter(i);
+  P.forEach((q,j)=>{
+   if(q.m==='p'){let dom=true;
+    if(j===1){if(P[0].m==='p')dom=!(n[0]&&nz(n[0])!==nz(n[1]));else dom=!out[0].some(h=>up(h[i]))}
+    out[j][0][i]=dom?lt.toUpperCase():lt;out[j][1][i]=lt;
+    if(n[j])nn[dom?2*i:2*i+1]=n[j]}
+   else if(n[j]){const dom=out[j].some(h=>up(h[i]));nn[dom?2*i:2*i+1]=n[j]}})}
+ return{c:out,nn}}
 function lsolve(x){
- x.gm=null;
+ x.gm=null;x.items=[];
  const E=m=>`<div class="err">${m}</div>`;
- const al=x.p.map(q=>q.c.map(h=>h.map(v=>String(v).trim())));
+ const dv=lDerive(x);if(typeof dv==='string')return E(dv);const al=dv.c;
  if(al.some(a=>a.some(h=>h.some(v=>v.length!==1||v.toLowerCase()===v.toUpperCase()))))return E('Заполните все аллели на хромосомах: по одной букве, например A или a.');
  const lt=[0,1].map(i=>[...new Set(al.flatMap(a=>a.map(h=>h[i].toLowerCase())))]);
  if(lt.some(s=>s.length!==1))return E('В каждом локусе используйте одну букву: доминантный аллель заглавный, рецессивный строчный.');
@@ -413,7 +432,7 @@ function lsolve(x){
  const cn=(String(x.ph||'').trim()?x.ph:x.nums).replace(/,/g,'.').split(/[:\/;\s\-–]+/).map(parseFloat).filter(v=>v>0);
  const rows=(x.rows||[]).map(r=>({a:String(r.a||'').trim(),b:String(r.b||'').trim(),n:num(r.n)})).filter(r=>r.n>0);
  const lo=t=>t.toLowerCase(),kk=t=>(t.length===1&&t.toLowerCase()!==t.toUpperCase())?t:lo(t),useC=rows.length>0,AN=rows.reduce((a,r)=>a+r.n,0),N=useC?AN:cn.reduce((a,b)=>a+b,0);
- let ac=[0,0,0,0];const NN=x.n.slice();
+ let ac=[0,0,0,0];const NN=dv.nn.slice();
  const nms=[0,1].map(i=>{const m=[],d={};rows.forEach(r=>{const t=i?r.b:r.a,k=kk(t);if(k&&!(k in d)){d[k]=t;m.push(k)}});return{m,d}});
  let fo=[[0],[0]];
  if(useC){
@@ -473,51 +492,65 @@ function lsolve(x){
  const lz=(rec,k)=>fl(rec?RCi:NRi,(k||0)%2===1),phs=(rec,k)=>{const t=lz(rec,k);return t?' — встречается у <b>'+t+'</b> особей':''};
  const pl=c=>pn(c)+(lz(rc(c))?` <b>(${lz(rc(c))})</b>`:'');
  const kg=[0,0],kp=[0,0];
- const list=[...gt].sort((p,q)=>(p.wr>p.w/2)-(q.wr>q.w/2)).map(g=>{const rec=anyX&&g.wr>g.w/2,k=kg[rec?1:0]++;return `${g.g} — ${pn(g.c)}${phs(rec,k)}${anyX?' — '+(rec?'рекомбинантный':'нерекомбинантный'):''}`}).join('<br>');
+ const gsrt=[...gt].sort((p,q)=>(p.wr>p.w/2)-(q.wr>q.w/2));
+ const pnr=c=>{const d1=c<2,d2=c%2===0;return[d1?NN[0]:NN[1],d2?NN[2]:NN[3]]};
+ const pcl=j=>(dom(H[j][0][0])||dom(H[j][1][0])?0:2)+(dom(H[j][0][1])||dom(H[j][1][1])?0:1);
+ const itmL=(g,ns)=>({type:'l',key:'l|'+g+'|'+ns.join('|'),g,n:{},c:g.split('/').map(h=>[h[0],h[1]]),ph:ns});
+ x.items=[0,1].map(j=>itmL(hp(j),pnr(pcl(j)))).concat(gsrt.map(g=>itmL(g.g,pnr(g.c))));
+ const list=gsrt.map((g,ii)=>{const rec=anyX&&g.wr>g.w/2,k=kg[rec?1:0]++;return `{{F${ii+2}}}${g.g} — ${pn(g.c)}${phs(rec,k)}${anyX?' — '+(rec?'рекомбинантный':'нерекомбинантный'):''}`}).join('<br>');
  const tm=D.G[0].length*D.G[1].length>4;
  const tb=tm?'<h2 style="margin-top:16px">F₁ — решётка Пеннета</h2><div class="sc"><table class="pt"><tr><th>'+((sy(0)+'/'+sy(1)).replace(/ /g,'')||'G')+'</th>'+D.G[1].map(v=>`<th>${v.a}${v.b}</th>`).join('')+'</tr>'+D.G[0].map(u=>`<tr><th>${u.a}${u.b}</th>`+D.G[1].map(v=>{const hs=[u.a+u.b,v.a+v.b].sort((p,q)=>key(p)-key(q)),c=((dom(u.a)||dom(v.a))?0:2)+((dom(u.b)||dom(v.b))?0:1);return `<td>${hs.join('/')}<br><small>${pl(c)}</small></td>`}).join('')+'</tr>').join('')+'</table></div>':'';
  const who=XF.map((v,j)=>v?'родитель '+(j+1)+(x.p[j].s==='x'?'':' ('+SY[x.p[j].s]+')'):null).filter(Boolean).join(' и ');
  const crs=anyX?`Кроссинговер есть (${who}). Частота кроссинговера: <b>${fmt(r*100)} %</b>, расстояние между генами — ${fmt(r*100)} морганид (1 морганида = 1 % кроссинговера). Рекомбинантные особи получаются из кроссоверных гамет.`:'Кроссинговер не обнаружен: гены наследуются сцепленно, рекомбинантных особей нет.';
- return `<h2 style="margin-top:16px">Родители</h2><div class="sch">${sy(0)}${hp(0)} — ${pf(0)}<br>${sy(1)}${hp(1)} — ${pf(1)}</div>
+ return `<h2 style="margin-top:16px">Родители</h2><div class="sch">{{F0}}${sy(0)}${hp(0)} — ${pf(0)}<br>{{F1}}${sy(1)}${hp(1)} — ${pf(1)}</div>
 <h2 style="margin-top:16px">Кроссинговер</h2><div class="note" style="margin:0">${crs}${auto?' <i>Наличие кроссинговера определено автоматически по числам особей.</i>':''}</div>${warn}${altT}${domN}${mp}
 <h2 style="margin-top:16px">Схема скрещивания</h2><div class="sch">P: ${sy(0)}${hp(0)} × ${sy(1)}${hp(1)}<br>&nbsp;&nbsp;&nbsp;${pf(0)} × ${pf(1)}<br>G: ${sy(0)}${D.G[0].map(g=>g.a+g.b).join(', ')} | ${sy(1)}${D.G[1].map(g=>g.a+g.b).join(', ')}<br>${gl(0)}<br>${gl(1)}${tm?'':'<br>F₁:<br>'+list}</div>${tb}${tm?'<h2 style="margin-top:16px">Классы потомства</h2><div class="sch">'+list+'</div>':''}
 <h2 style="margin-top:16px">Фенотипы потомства</h2><div class="sch" style="white-space:normal">${cls.map(c=>{const rec=rc(c),k=kp[rec?1:0]++;return `${pn(c)}${phs(rec,k)}${anyX?' — '+(rec?'рекомбинантный':'нерекомбинантный'):''}`}).join('<br>')}</div><div class="note">${byN?'Числа из задачи: '+cn.map((v,i)=>'abcdefgh'[i]+' = '+String(v).replace('.',',')).join(', ')+'. Какие фенотипы именно, не известно, поэтому нерекомбинантным особям отвечают два больших числа, рекомбинантным — два меньших; в соседних фенотипах числа названы в обратном порядке.':''}</div>`}
 lRender();
 
-const ZP=(s,t)=>({s,t,x:[['',''],['','']],au:['',''],ph:''});
-const ZN=()=>({p:[ZP('f','XX'),ZP('m','XY')],L2:0,AU:0,dx:'auto',da:1,xo:2,r:'',n:['','','','','','','',''],rows:[{s:'',t:'',n:''}],res:''});
+const ZP=(s,t)=>({s,t,m:'g',x:[['',''],['','']],au:['',''],ph:['','','',''],ym:0,yp:''});
+const ZN=()=>({p:[ZP('f','XX'),ZP('m','XY')],L2:0,AU:0,dx:'auto',da:1,xo:2,r:'',rows:[{s:'',t:'',n:''}],res:'',items:[]});
 const ZX=[ZN()];
 const nz=t=>String(t||'').toLowerCase().replace(/ё/g,'е').replace(/[\s,.;:()\-–—_"«»]+/g,'');
+function toggleFL(x,n){const it=x.items&&x.items[n];if(!it)return;const ix=FL.findIndex(f=>f.key===it.key);if(ix<0)FL.push(it);else FL.splice(ix,1)}
+function flRep(html,x,c,act){return String(html||'').replace(/\{\{F(\d+)\}\}/g,(m,n)=>{const it=x.items&&x.items[+n];return it?`<button class="fg${FL.some(f=>f.key===it.key)?' on':''}" data-${act}="fl" ${c} data-it="${n}" aria-label="Отметить генотип">⚑</button>`:''})}
+function memCard(){return (FL.length||AM.length)?`<div class="card"><h2>память</h2>${AM.length?`<div class="note" style="margin:0 0 8px">Запомненные аллели (доминантный · рецессивный)</div><div class="chips">${AM.map(a=>`<span class="chip">${esc(a.L)} — ${esc(a.d)}${a.r?' · '+esc(a.l)+' — '+esc(a.r):''}</span>`).join('')}</div>`:''}${FL.length?`<div class="note" style="margin:12px 0 8px">Отмеченные генотипы</div><div class="chips">${FL.map((f,i)=>`<span class="chip">⚑ ${esc(f.g)}${f.n&&Object.keys(f.n).length?' · '+esc(Object.values(f.n).join(' ')):''}<button data-g="fr" data-it="${i}" aria-label="Убрать">×</button></span>`).join('')}</div>`:''}<button class="clr" data-g="mc" style="margin-top:12px">Очистить память</button></div>`:''}
 const zSvg=(n,tl,tr)=>{const H=52*n;let t='';for(let i=0;i<n;i++){const y=26+52*i;if(tl)t+=`M12 ${y}H32`;if(tr)t+=`M38 ${y}H58`}
  return `<svg width="70" height="${H}" viewBox="0 0 70 ${H}" fill="none" stroke="var(--green)" stroke-linecap="round" aria-hidden="true"><path d="M22 6V${H-6}M48 6V${H-6}" stroke-width="4"/><path d="${t}" stroke-width="3"/></svg>`};
 function zRender(){
- $('#sl').innerHTML=ZX.map((x,i)=>{
+ $('#sl').innerHTML=memCard()+ZX.map((x,i)=>{
   const c=`data-c="${i}"`,nL=x.L2?2:1;
   const seg=(key,opts,cur)=>`<div class="sx" style="margin:6px 0">${opts.map(o=>`<button data-q="${key}" ${c} data-v="${o[0]}" class="t ${String(cur)===String(o[0])?'on':''}">${o[1]}</button>`).join('')}</div>`;
-  const ni=(k,p)=>`<input data-zf="n" ${c} data-k="${k}" placeholder="${p}" value="${esc(x.n[k])}">`;
-  const cell=(q,j)=>{const xy=q.t==='XY';
+  const cell=(q,j)=>{const xy=q.t==='XY',gm=q.m!=='p';
    const col=h=>`<div class="zc" style="grid-template-rows:repeat(${nL},52px)">${Array.from({length:nL},(_,k)=>(xy&&h===1)?'<span></span>':`<input class="al" maxlength="1" data-zf="x" ${c} data-j="${j}" data-h="${h}" data-i="${k}" placeholder="${'Aa'[h]}" value="${esc(q.x[h][k])}" aria-label="Аллель">`).join('')}</div>`;
-   const xb=`<div class="zb">${col(0)}<div class="xl" style="height:${52*nL}px"><b>X</b><b>${xy?'Y':'X'}</b></div>${col(1)}</div>`;
+   const yb=`<button class="yb" data-q="ym" ${c} data-j="${j}" aria-label="Пометить Y звёздочкой">Y${q.ym?'<sup>*</sup>':''}</button>`;
+   const xb=`<div class="zb">${col(0)}<div class="xl" style="height:${52*nL}px"><b>X</b>${xy?yb:'<b>X</b>'}</div>${col(1)}</div>`;
    const ab=x.AU?`<div class="zb"><div class="zc"><input class="al" maxlength="1" data-zf="au" ${c} data-j="${j}" data-h="0" placeholder="C" value="${esc(q.au[0])}" aria-label="Аллель"></div>${zSvg(1,true,true)}<div class="zc"><input class="al" maxlength="1" data-zf="au" ${c} data-j="${j}" data-h="1" placeholder="c" value="${esc(q.au[1])}" aria-label="Аллель"></div></div>`:`<button class="zp" data-q="au" ${c} aria-label="Добавить аутосомный признак">+</button>`;
-   return `<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f'].map(s=>`<button data-q="zs" ${c} data-j="${j}" data-v="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><div class="sx" style="margin-top:8px">${['XX','XY'].map(t=>`<button data-q="zt" ${c} data-j="${j}" data-v="${t}" class="t ${q.t===t?'on':''}">${t}</button>`).join('')}</div><div class="zrow">${ab}${xb}</div><input data-zf="ph" ${c} data-j="${j}" placeholder="Фенотип (если генотип не вписан)" value="${esc(q.ph)}"></div>`};
-  const names=`<div class="pc" style="margin-top:10px"><small>Признаки (по желанию)</small><div class="note" style="margin:0">Признак 1 (на X) — доминирование:</div>${seg('dx',[['auto','Авто'],['full','Полное'],['inc','Неполное']],x.dx)}<div class="pg">${ni(0,'Доминантный')}${ni(1,'Рецессивный')}</div>${x.dx!=='full'?ni(2,'Гетерозигота (если неполное)'):''}${x.L2?`<div class="note" style="margin:10px 0 0">Признак 2 (на X):</div><div class="pg">${ni(3,'Доминантный')}${ni(4,'Рецессивный')}</div>`:''}${x.AU?`<div class="note" style="margin:10px 0 0">Аутосомный признак — доминирование:</div>${seg('da',[[1,'Полное'],[2,'Неполное']],x.da)}<div class="pg">${ni(5,'Доминантный')}${ni(6,'Рецессивный')}</div>${x.da===2?ni(7,'Гетерозигота'):''}`:''}<div class="sx" style="margin-top:12px"><button data-q="l2" ${c} class="t">${x.L2?'− второй признак на X':'+ второй признак на X'}</button>${x.AU?`<button data-q="au" ${c} class="t">− аутосомный</button>`:''}</div></div>`;
+   const pi=(k,p)=>`<input data-zf="pt" ${c} data-j="${j}" data-t="${k}" placeholder="${p}" value="${esc(q.ph[k])}">`;
+   const body=gm?`<div class="zrow">${ab}${xb}</div>${xy&&q.ym?`<input data-zf="yp" ${c} data-j="${j}" placeholder="Фенотип Y* (признак на Y)" value="${esc(q.yp)}">`:''}`:`${pi(0,'Признак 1 (на X)')}${x.L2?pi(1,'Признак 2 (на X)'):''}${x.AU?pi(2,'Аутосомный признак'):''}${xy?pi(3,'Признак на Y* (если есть)'):''}`;
+   const mem=FL.some(f=>f.type==='s')?`<select data-zf="pick" ${c} data-j="${j}"><option value="">⚑ Из памяти…</option>${FL.map((f,k)=>f.type==='s'?`<option value="${k}">${esc(f.g)}${f.ph&&f.ph.filter(Boolean).length?' — '+esc(f.ph.filter(Boolean).join(', ')):''}</option>`:'').join('')}</select>`:'';
+   return `<div class="pc"><small>Родитель ${j+1}</small><div class="sx">${['m','f'].map(s=>`<button data-q="zs" ${c} data-j="${j}" data-v="${s}" class="${q.s===s?'on':''}">${SY[s]}</button>`).join('')}</div><div class="sx" style="margin-top:8px">${['XX','XY'].map(t=>`<button data-q="zt" ${c} data-j="${j}" data-v="${t}" class="t ${q.t===t?'on':''}">${t}</button>`).join('')}</div><div class="sx" style="margin-top:8px">${[['g','Генотип'],['p','Признаки']].map(o=>`<button data-q="zm" ${c} data-j="${j}" data-v="${o[0]}" class="t ${(q.m==='p'?'p':'g')===o[0]?'on':''}">${o[1]}</button>`).join('')}</div>${body}${mem}</div>`};
+  const opts=`<div class="pc" style="margin-top:10px"><small>Признаки и доминирование</small><div class="note" style="margin:0">Признак 1 (на X) — доминирование:</div>${seg('dx',[['auto','Авто'],['full','Полное'],['inc','Неполное']],x.dx)}${x.AU?`<div class="note" style="margin:6px 0 0">Аутосомный признак — доминирование:</div>${seg('da',[[1,'Полное'],[2,'Неполное']],x.da)}`:''}<div class="sx" style="margin-top:10px"><button data-q="l2" ${c} class="t">${x.L2?'− второй признак на X':'+ второй признак на X'}</button><button data-q="au" ${c} class="t">${x.AU?'− аутосомный признак':'+ аутосомный признак'}</button></div></div>`;
   const xo=x.L2?`<div class="pc" style="margin-top:10px"><small>Кроссинговер между генами X</small>${seg('xo',[[2,'Авто'],[1,'Есть'],[0,'Нет']],x.xo)}<input data-zf="r" inputmode="decimal" placeholder="Кроссинговер, % (если известен)" value="${esc(x.r)}"></div>`:'';
-  const off=`<div class="pc" style="margin-top:10px"><small>Потомство: пол, фенотип, число особей</small>${x.rows.map((r,k)=>`<div class="or2"><select data-zf="rs" ${c} data-k="${k}"><option value=""${r.s===''?' selected':''}>пол</option><option value="m"${r.s==='m'?' selected':''}>♂</option><option value="f"${r.s==='f'?' selected':''}>♀</option></select><input data-zf="rt" ${c} data-k="${k}" placeholder="Фенотип" value="${esc(r.t)}"><input data-zf="rn" ${c} data-k="${k}" inputmode="decimal" placeholder="Число" value="${esc(r.n)}">${x.rows.length>1?`<button class="x" data-q="dr" ${c} data-k="${k}" aria-label="Убрать">×</button>`:'<span></span>'}</div>`).join('')}${x.rows.length<8?`<button class="add" data-q="ar" ${c}>+ строка</button>`:''}<div class="note" style="margin:10px 0 0">Необязательно. Регистр букв и пробелы в фенотипе не важны; можно перечислить несколько признаков в одной строке.</div></div>`;
-  return `<div class="card"><div class="gh"><h2>Скрещивание ${i+1}</h2><button class="clr" data-q="tr" ${c} aria-label="Удалить">🗑</button></div><div class="pg1">${x.p.map(cell).join('')}</div>${names}${xo}${off}<button class="go" data-q="go" ${c}>Скрестить</button><div>${x.res}</div></div>`}).join('')}
+  const off=`<div class="pc" style="margin-top:10px"><small>Потомство: пол, фенотип, число особей</small>${x.rows.map((r,k)=>`<div class="or2"><select data-zf="rs" ${c} data-k="${k}"><option value=""${r.s===''?' selected':''}>пол</option><option value="m"${r.s==='m'?' selected':''}>♂</option><option value="f"${r.s==='f'?' selected':''}>♀</option></select><input data-zf="rt" ${c} data-k="${k}" placeholder="Фенотип" value="${esc(r.t)}"><input data-zf="rn" ${c} data-k="${k}" inputmode="decimal" placeholder="Число" value="${esc(r.n)}">${x.rows.length>1?`<button class="x" data-q="dr" ${c} data-k="${k}" aria-label="Убрать">×</button>`:'<span></span>'}</div>`).join('')}${x.rows.length<8?`<button class="add" data-q="ar" ${c}>+ строка</button>`:''}<div class="note" style="margin:10px 0 0">Необязательно. Регистр букв и пробелы в фенотипе не важны; в одной строке можно перечислить несколько признаков.</div></div>`;
+  return `<div class="card"><div class="gh"><h2>Скрещивание ${i+1}</h2><button class="clr" data-q="tr" ${c} aria-label="Удалить">🗑</button></div><div class="pg1">${x.p.map(cell).join('')}</div>${opts}${xo}${off}<button class="go" data-q="go" ${c}>Скрестить</button><div>${flRep(x.res,x,c,'q')}</div></div>`}).join('')}
 $('#sk').addEventListener('input',e=>{const t=e.target,d=t.dataset,x=ZX[+d.c];if(!x||!d.zf)return;
  if(d.zf==='x')x.p[+d.j].x[+d.h][+d.i]=t.value;
  else if(d.zf==='au')x.p[+d.j].au[+d.h]=t.value;
- else if(d.zf==='ph')x.p[+d.j].ph=t.value;
- else if(d.zf==='n')x.n[+d.k]=t.value;
+ else if(d.zf==='pt')x.p[+d.j].ph[+d.t]=t.value;
+ else if(d.zf==='yp')x.p[+d.j].yp=t.value;
  else if(d.zf==='r')x.r=t.value;
  else if(d.zf==='rt')x.rows[+d.k].t=t.value;
  else if(d.zf==='rn')x.rows[+d.k].n=t.value;
- else if(d.zf==='rs')x.rows[+d.k].s=t.value});
+ else if(d.zf==='rs')x.rows[+d.k].s=t.value;
+ else if(d.zf==='pick'){const f=FL[+t.value];if(f&&f.type==='s'){const q=x.p[+d.j];q.m='g';q.t=f.t;q.s=f.s;q.x=f.x.map(h=>h.slice());q.au=f.au.slice();q.ym=f.ym;q.yp=f.yp||'';q.ph=(f.ph||['','','','']).slice();if(f.x.some(h=>String(h[1]||'').trim()))x.L2=1;if(f.au.some(v=>String(v).trim()))x.AU=1}zRender()}});
 $('#sk').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const d=b.dataset,g=d.q,i=+d.c,x=ZX[i];
  if(g==='add')ZX.push(ZN());
  else if(g==='tr'){if(ZX.length>1)ZX.splice(i,1);else ZX[0]=ZN()}
  else if(g==='zs')x.p[+d.j].s=d.v;
  else if(g==='zt')x.p[+d.j].t=d.v;
+ else if(g==='zm')x.p[+d.j].m=d.v;
+ else if(g==='ym')x.p[+d.j].ym=x.p[+d.j].ym?0:1;
  else if(g==='au')x.AU=x.AU?0:1;
  else if(g==='l2')x.L2=x.L2?0:1;
  else if(g==='dx')x.dx=d.v;
@@ -525,65 +558,83 @@ $('#sk').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b
  else if(g==='xo')x.xo=+d.v;
  else if(g==='ar'){if(x.rows.length<8)x.rows.push({s:'',t:'',n:''})}
  else if(g==='dr'){if(x.rows.length>1)x.rows.splice(+d.k,1)}
+ else if(g==='fl')toggleFL(x,+d.it);
  else if(g==='go')x.res=zsolve(x);
- zRender()});
-function zsolve(x){
+ save();zRender();lRender();gRender()});
+function zhyp(x){
+ const P=x.p,allT=P.flatMap(q=>q.ph.slice(0,3)).map(nz).concat(x.rows.map(r=>nz(r.t))).join('|');
+ const cat=x.dx==='inc'||(x.dx==='auto'&&/рыж/.test(allT)&&/черн/.test(allT));
+ const act=[true,!!x.L2,!!x.AU];let combos=[Array(8).fill('')];
+ [[0,0],[1,3],[2,5]].forEach(([pi,base],ti)=>{
+  if(!act[ti]||(ti===0&&cat))return;
+  const ns=[];P.forEach(q=>{const d=String(q.ph[pi]||'').trim();if(d&&!ns.some(z=>nz(z)===nz(d)))ns.push(d)});
+  if(!ns.length)return;
+  const o=ns.length>1?[[ns[0],ns[1]],[ns[1],ns[0]]]:[[ns[0],''],['',ns[0]]];
+  combos=combos.flatMap(c=>o.map(p=>{const n=c.slice();n[base]=p[0];n[base+1]=p[1];return n}))});
+ return combos}
+function zsolve(x){const hy=zhyp(x);let best=null;
+ for(const nm of hy){const r=zcore(x,nm);if(typeof r==='string')return r;if(!best||r.e<best.e-1e-9)best=r}
+ x.items=best.items;
+ return best.h+(hy.length>1&&!best.hasRows?'<div class="note">Какой признак доминантный, по названиям не определить — принят признак первого родителя. Впишите потомство, чтобы проверить.</div>':'')}
+function zcore(x,nm){
  const E=m=>`<div class="err">${m}</div>`,P=x.p,nL=x.L2?2:1;
  if(P.filter(q=>q.t==='XX').length!==1)return E('Нужно скрещивание XX × XY: один родитель с набором XX, другой — XY.');
  const hi=P.findIndex(q=>q.t==='XX'),he=P.findIndex(q=>q.t==='XY');
  const rows=x.rows.map(r=>({s:r.s,t:nz(r.t),n:num(r.n)})).filter(r=>r.n>0),N=rows.reduce((a,r)=>a+r.n,0);
- const allT=P.map(q=>nz(q.ph)).concat(rows.map(r=>r.t),x.n.slice(0,3).map(nz)).join('|');
+ const allT=P.flatMap(q=>q.ph.slice(0,3)).map(nz).concat(rows.map(r=>r.t)).join('|');
  const cat=x.dx==='inc'||(x.dx==='auto'&&/рыж/.test(allT)&&/черн/.test(allT));
+ const ymk=q=>q.m==='p'?nz(q.ph[3])!=='':!!q.ym,Yname=String(P[he].m==='p'?P[he].ph[3]:P[he].yp).trim(),yAct=ymk(P[he]);
  const TR=[{k:'x1',xi:0,nm:[0,1,2],inc:cat,lb:'признак 1 (X)',df:cat?'B':'A'}];
  if(x.L2)TR.push({k:'x2',xi:1,nm:[3,4,-1],inc:false,lb:'признак 2 (X)',df:'C'});
  if(x.AU)TR.push({k:'au',nm:[5,6,7],inc:x.da===2,lb:'аутосомный признак',df:'D'});
- const au=TR.length-1;
- for(const t of TR){const b=P.flatMap(q=>t.k==='au'?q.au:(q.t==='XY'?q.x.slice(0,1):q.x).map(h=>h[t.xi])).map(v=>String(v).trim()).filter(Boolean);
+ if(yAct)TR.push({k:'y',nm:[-1,-1,-1],inc:false,lb:'признак Y'});
+ const ai=TR.findIndex(t=>t.k==='au');
+ for(const t of TR){if(t.k==='y')continue;const b=P.flatMap(q=>t.k==='au'?q.au:(q.t==='XY'?q.x.slice(0,1):q.x).map(h=>h[t.xi])).map(v=>String(v).trim()).filter(Boolean);
   if(b.some(v=>!/^\p{L}$/u.test(v)))return E('Аллель записывается одной буквой (заглавная — доминантный аллель).');
   if(new Set(b.map(v=>v.toLowerCase())).size>1)return E(`В признаке «${t.lb}» для аллелей используйте одну букву.`);
   t.L=(b[0]||t.df).toLowerCase()}
  const tok=v=>v===v.toUpperCase()?'U':'L',al=(t,k)=>k==='U'?t.L.toUpperCase():t.L;
- const code=(txt,t)=>{if(!txt)return null;let best=null,bl=0;t.nm.forEach((k,i)=>{const n=k<0?'':nz(x.n[k]);if(n&&txt.includes(n)&&n.length>bl){best='ULH'[i];bl=n.length}});
+ const code=(txt,t)=>{if(!txt)return null;
+  if(t.k==='y'){const yn=nz(Yname);return yn&&txt.includes(yn)?'M':null}
+  let best=null,bl=0;t.nm.forEach((k,i)=>{const n=k<0?'':nz(nm[k]);if(n&&txt.includes(n)&&n.length>bl){best='ULH'[i];bl=n.length}});
   if(best)return best;
   if(t.k==='x1'&&cat){if(/черепах|пестр/.test(txt))return'H';if(/черн/.test(txt))return'U';if(/рыж/.test(txt))return'L'}
   return null};
  const dip=(c,t)=>t.inc?({U:[['U','U']],L:[['L','L']],H:[['U','L']]})[c]:(c==='L'?[['L','L']]:[['U','U'],['U','L']]);
- const pOpts=(q,j)=>{const xy=q.t==='XY',hs=xy?[0]:[0,1],xb=hs.flatMap(h=>Array.from({length:nL},(_,i)=>String(q.x[h][i]).trim())),txt=nz(q.ph);
-  const full=xb.every(Boolean),none=xb.every(v=>!v);let Xo;
-  if(!full&&!none)return E(`Родитель ${j+1}: заполните все аллели на X-хромосомах или оставьте их пустыми и укажите фенотип.`);
-  if(full)Xo=[hs.map(h=>Array.from({length:nL},(_,i)=>tok(q.x[h][i])))];
-  else{if(nL>1)return E(`Родитель ${j+1}: для двух признаков на X впишите аллели на хромосомах.`);
-   const c=code(txt,TR[0]);if(!c)return E(`Родитель ${j+1}: впишите аллели на X-хромосомах или фенотип по признаку 1 (X) — название должно совпадать с блоком «Признаки».`);
+ const pOpts=(q,j)=>{const xy=q.t==='XY';let Xo,Ao=[null];
+  if(q.m!=='p'){const hs=xy?[0]:[0,1],xb=hs.flatMap(h=>Array.from({length:nL},(_,i)=>String(q.x[h][i]).trim()));
+   if(!xb.every(Boolean))return E(`Родитель ${j+1}: заполните аллели на X-хромосомах или переключитесь на «Признаки».`);
+   Xo=[hs.map(h=>Array.from({length:nL},(_,i)=>tok(q.x[h][i])))];
+   if(x.AU){const ab=q.au.map(v=>String(v).trim());if(!ab.every(Boolean))return E(`Родитель ${j+1}: впишите оба аллеля аутосомного признака.`);Ao=[ab.map(tok)]}}
+  else{if(nL>1)return E(`Родитель ${j+1}: для двух признаков на X используйте режим «Генотип».`);
+   const c=code(nz(q.ph[0]),TR[0]);if(!c)return E(`Родитель ${j+1}: впишите фенотип по признаку 1 (на X).`);
    if(xy){if(c==='H'&&TR[0].inc)return E(`Родитель ${j+1}: у особи XY один аллель X-признака, гетерозиготы быть не может.`);Xo=[[[c==='L'?'L':'U']]]}
-   else Xo=dip(c,TR[0]).map(g=>g.map(a=>[a]))}
-  let Ao=[null];
-  if(x.AU){const ab=q.au.map(v=>String(v).trim());
-   if(ab.every(Boolean))Ao=[ab.map(tok)];
-   else if(ab.some(Boolean))return E(`Родитель ${j+1}: впишите оба аллеля аутосомного признака или оставьте пустыми и укажите фенотип.`);
-   else{const c=code(txt,TR[au]);if(!c)return E(`Родитель ${j+1}: впишите аллели аутосомного признака или его фенотип (название из блока «Признаки»).`);Ao=dip(c,TR[au])}}
+   else Xo=dip(c,TR[0]).map(g=>g.map(a=>[a]));
+   if(x.AU){const c2=code(nz(q.ph[2]),TR[ai]);if(!c2)return E(`Родитель ${j+1}: впишите фенотип по аутосомному признаку.`);Ao=dip(c2,TR[ai])}}
   return Xo.flatMap(X=>Ao.map(A=>({X,A})))};
  const O0=pOpts(P[0],0);if(typeof O0==='string')return O0;
  const O1=pOpts(P[1],1);if(typeof O1==='string')return O1;
  const mg=(l,k)=>{const m={};l.forEach(s=>{const kk=k(s);if(m[kk])m[kk].w+=s.w;else m[kk]={...s}});return Object.values(m).filter(s=>s.w>1e-12)};
  const kh=h=>h.map(t=>t==='U'?0:1).join('');
  const gam=(G,q,xf,r)=>{let sg;
-  if(q.t==='XY')sg=[{h:G.X[0],w:.5},{y:1,w:.5}];
+  if(q.t==='XY')sg=[{h:G.X[0],w:.5},{y:1,m:ymk(q)?1:0,w:.5}];
   else{const c0=G.X[0],c1=G.X[1];sg=(nL===2&&xf)?[{h:c0,w:(1-r)/2},{h:c1,w:(1-r)/2},{h:[c0[0],c1[1]],w:r/2},{h:[c1[0],c0[1]],w:r/2}]:[{h:c0,w:.5},{h:c1,w:.5}]}
-  sg=mg(sg,s=>s.y?'Y':s.h.join(''));
+  sg=mg(sg,s=>s.y?'Y'+(s.m?'*':''):s.h.join(''));
   const ag=G.A?mg([{a:G.A[0],w:.5},{a:G.A[1],w:.5}],s=>s.a):[{a:null,w:1}];
   return sg.flatMap(s=>ag.map(a=>({...s,a:a.a,w:s.w*a.w})))};
  const pc=(ti,toks)=>{const t=TR[ti],n=toks.filter(v=>v==='U').length;
   if(toks.length===1)return t.inc?toks[0]:(toks[0]==='U'?'D':'R');
   return t.inc?(n===2?'U':n===1?'H':'L'):(n>0?'D':'R')};
- const mk=(u,v)=>{let kar,X;
-  if(u.y||v.y){kar='XY';X=[u.y?v.h:u.h]}else{kar='XX';X=[u.h,v.h].sort((a,b)=>kh(a)<kh(b)?-1:kh(a)>kh(b)?1:0)}
+ const mk=(u,v)=>{let kar,X,m=0;
+  if(u.y||v.y){kar='XY';X=[u.y?v.h:u.h];m=u.y?u.m:v.m}else{kar='XX';X=[u.h,v.h].sort((a,b)=>kh(a)<kh(b)?-1:kh(a)>kh(b)?1:0)}
   const A=u.a!=null?[u.a,v.a].sort((a,b)=>(a==='U'?0:1)-(b==='U'?0:1)):null;
-  return{kar,X,A,sex:P[kar==='XX'?hi:he].s,w:u.w*v.w,codes:TR.map((t,ti)=>t.k==='au'?pc(ti,A):pc(ti,X.map(h=>h[t.xi])))}};
+  return{kar,X,A,m,sex:P[kar==='XX'?hi:he].s,w:u.w*v.w,codes:TR.map((t,ti)=>t.k==='y'?(kar==='XY'?(m?'M':'N'):null):t.k==='au'?pc(ti,A):pc(ti,X.map(h=>h[t.xi])))}};
  const cls=(G0,G1,xf,r)=>{const m={};
-  for(const u of gam(G0,P[0],xf,r))for(const v of gam(G1,P[1],xf,r)){const c=mk(u,v),key=c.sex+c.kar+c.X.map(h=>h.join('')).join('/')+(c.A?c.A.join(''):'');if(m[key])m[key].w+=c.w;else m[key]=c}
+  for(const u of gam(G0,P[0],xf,r))for(const v of gam(G1,P[1],xf,r)){const c=mk(u,v),key=c.sex+c.kar+c.m+c.X.map(h=>h.join('')).join('/')+(c.A?c.A.join(''):'');if(m[key])m[key].w+=c.w;else m[key]=c}
   return Object.values(m)};
+ const mapc=(ti,k)=>TR[ti].k==='y'?k:(TR[ti].inc?k:(k==='L'?'R':'D'));
  const rp=rows.map(r=>({...r,cd:TR.map(t=>code(r.t,t))}));
- const err=cl=>{if(!rp.length)return 0;const ps=rp.map(r=>cl.reduce((a,c)=>a+((!r.s||c.sex===r.s)&&r.cd.every((k,ti)=>!k||c.codes[ti]===(TR[ti].inc?k:(k==='L'?'R':'D')))?c.w:0),0)),S=ps.reduce((a,b)=>a+b,0);
+ const err=cl=>{if(!rp.length)return 0;const ps=rp.map(r=>cl.reduce((a,c)=>a+((!r.s||c.sex===r.s)&&r.cd.every((k,ti)=>!k||c.codes[ti]===mapc(ti,k))?c.w:0),0)),S=ps.reduce((a,b)=>a+b,0);
   return S<1e-9?5:ps.reduce((a,p,i)=>a+(p/S-rp[i].n/N)**2,0)};
  const rr=x.r.trim()?num(x.r):null;
  if(rr!=null&&!(rr>=0&&rr<=50))return E('Процент кроссинговера — число от 0 до 50.');
@@ -594,42 +645,51 @@ function zsolve(x){
   for(const xf of xs){const rs=!xf?[0]:rr!=null?[rr/100]:(N?Array.from({length:101},(_,k)=>k/200):null);
    if(!rs){if(x.xo===1)return E('Укажите % кроссинговера или данные о потомстве.');continue}
    for(const r of rs){const cl=cls(G0,G1,xf,r),e=err(cl);if(!B||e<B.e-1e-9)B={G0,G1,xf,r,cl,e}}}}
- const{G0,G1,xf,r}=B,cl=B.cl.sort((a,b)=>b.w-a.w),GG=[G0,G1];
+ const{G0,G1,xf,r}=B,cl=B.cl.sort((a,b)=>b.w-a.w);
  const notes=[];
  if(!rows.length&&(O0.length>1||O1.length>1))notes.push('Генотип особи с доминантным фенотипом по фенотипу определяется неоднозначно — взят гомозиготный вариант. Впишите потомство или аллели, чтобы уточнить.');
- rp.forEach((r,k)=>{if(r.t&&r.cd.every(v=>!v))notes.push(`Строка потомства ${k+1}: фенотип не распознан — названия должны совпадать с блоком «Признаки».`)});
+ rp.forEach((r,k)=>{if(r.t&&r.cd.every(v=>!v))notes.push(`Строка потомства ${k+1}: фенотип не распознан — используйте названия, которые вписаны у родителей.`)});
  if(rows.length&&B.e>.003)notes.push('Данные потомства плохо согласуются с заданными генотипами родителей: проверьте аллели, пол и названия.');
- const hs=h=>h.map((t,i)=>al(TR[i],t)).join(''),aus=A=>A.map(t=>al(TR[au],t)).join('');
- const gX=(X,y)=>y?'X<sup>'+hs(X[0])+'</sup>Y':'X<sup>'+hs(X[0])+'</sup>X<sup>'+hs(X[1])+'</sup>';
- const gOf=(G,q)=>gX(G.X,q.t==='XY')+(G.A?' '+aus(G.A):'');
- const pname=(ti,cd)=>{const t=TR[ti],i=t.inc?'ULH'.indexOf(cd):(cd==='D'?0:1),k=t.nm[i];let n=k>=0?String(x.n[k]).trim():'';
-  if(!n&&t.k==='x1'&&cat)n={U:'чёрная окраска',L:'рыжая окраска',H:'черепаховая окраска'}[cd];
+ const hs=h=>h.map((t,i)=>al(TR[i],t)).join(''),aus=A=>A.map(t=>al(TR[ai],t)).join('');
+ const ys=m=>'Y'+(m?'<sup>*</sup>':'');
+ const gX=(X,y,m)=>y?'X<sup>'+hs(X[0])+'</sup>'+ys(m):'X<sup>'+hs(X[0])+'</sup>X<sup>'+hs(X[1])+'</sup>';
+ const gOf=(G,q)=>gX(G.X,q.t==='XY',ymk(q))+(G.A?' '+aus(G.A):'');
+ const rawn=(ti,cd)=>{const t=TR[ti];if(t.k==='y')return cd==='M'?Yname:'';const i=t.inc?'ULH'.indexOf(cd):(cd==='D'?0:1),k=t.nm[i];let n=k>=0?String(nm[k]).trim():'';
+  if(!n&&t.k==='x1'&&cat)n={U:'чёрная окраска',L:'рыжая окраска',H:'черепаховая окраска'}[cd];return n||''};
+ const pname=(ti,cd)=>{const t=TR[ti];if(t.k==='y')return cd==='M'?esc(Yname||'признак Y*'):'норма (Y без признака)';const n=rawn(ti,cd);
   return n?esc(n):(t.inc?{U:'дом. ',L:'рец. ',H:'пром. '}[cd]:(cd==='D'?'дом. ':'рец. '))+t.lb};
- const phOf=cd=>cd.map((c,ti)=>pname(ti,c)).join(', ');
- const pcodes=(G,q)=>TR.map((t,ti)=>t.k==='au'?pc(ti,G.A):pc(ti,G.X.map(h=>h[t.xi])));
- const sy=j=>SY[P[j].s],gl=(g,q)=>[...new Set(g.map(s=>(s.y?'Y':'X<sup>'+hs(s.h)+'</sup>')+(s.a?' '+al(TR[au],s.a):'')))].join(', ');
+ const phOf=cd=>cd.map((c,ti)=>c==null?'':pname(ti,c)).filter(Boolean).join(', ');
+ const pcodes=(G,q)=>TR.map((t,ti)=>t.k==='y'?(q.t==='XY'?(ymk(q)?'M':'N'):null):t.k==='au'?pc(ti,G.A):pc(ti,G.X.map(h=>h[t.xi])));
+ const phraw=cd=>{const o=['','','',''];cd.forEach((c,ti)=>{if(c==null)return;const t=TR[ti];o[t.k==='x1'?0:t.k==='x2'?1:t.k==='au'?2:3]=rawn(ti,c)});return o};
+ const lets=h=>{const a=h.map((t,i)=>al(TR[i],t));while(a.length<2)a.push('');return a};
+ const itm=(X,A,y,m,sk,ph)=>{const g=(y?'X'+hs(X[0])+' Y'+(m?'*':''):'X'+hs(X[0])+' X'+hs(X[1]))+(A?' '+aus(A):'');
+  return{type:'s',key:'s|'+g+'|'+sk,g,n:{},t:y?'XY':'XX',s:sk,x:y?[lets(X[0]),['','']]:X.map(lets),au:A?A.map(t=>al(TR[ai],t)):['',''],ym:m?1:0,yp:m?Yname:'',ph}};
+ const sy=j=>SY[P[j].s];
  const gam0=gam(G0,P[0],xf,r),gam1=gam(G1,P[1],xf,r);
+ const gl=g=>[...new Set(g.map(s=>(s.y?ys(s.m):'X<sup>'+hs(s.h)+'</sup>')+(s.a?' '+al(TR[ai],s.a):'')))].join(', ');
  const gcd2=(a,b)=>b?gcd2(b,a%b):a,D=[1,2,4,8,16,32,64,128,256,512];
  const fr=w=>{for(const d of D)if(Math.abs(w*d-Math.round(w*d))<1e-6){const n=Math.round(w*d),g=gcd2(n,d);return n/g+'/'+d/g}return fmt(w*100)+' %'};
  const rat=ws=>{ws=[...ws].sort((a,b)=>b-a);for(const m of D){if(ws.every(w=>Math.abs(w*m-Math.round(w*m))<1e-6)){const a=ws.map(w=>Math.round(w*m)),g=a.reduce(gcd2,0);return a.map(v=>v/g).join(' : ')}}return null};
- const lines=cl.map(c=>`${SY[c.sex]} ${gX(c.X,c.kar==='XY')}${c.A?' '+aus(c.A):''} — ${phOf(c.codes)} — ${fr(c.w)}`).join('<br>');
- const grp=(withSex)=>{const m={};cl.forEach(c=>{const k=(withSex?SY[c.sex]+' ':'')+phOf(c.codes);m[k]=(m[k]||0)+c.w});return Object.entries(m)};
+ const items=[0,1].map(j=>{const G=[G0,G1][j],q=P[j];return itm(G.X,G.A,q.t==='XY',ymk(q),q.s,phraw(pcodes(G,q)))}).concat(cl.map(c=>itm(c.X,c.A,c.kar==='XY',c.m,c.sex,phraw(c.codes))));
+ const lines=cl.map((c,k)=>`{{F${k+2}}}${SY[c.sex]} ${gX(c.X,c.kar==='XY',c.m)}${c.A?' '+aus(c.A):''} — ${phOf(c.codes)} — ${fr(c.w)}`).join('<br>');
+ const grp=withSex=>{const m={};cl.forEach(c=>{const k=(withSex?SY[c.sex]+' ':'')+phOf(c.codes);m[k]=(m[k]||0)+c.w});return Object.entries(m)};
  const gs=grp(true),gn=grp(false),rs=rat(gs.map(e=>e[1])),rn=rat(gn.map(e=>e[1]));
- const tm=gam0.length*gam1.length>4;
- const tb=tm?'<h2 style="margin-top:16px">F₁ — решётка Пеннета</h2><div class="sc"><table class="pt"><tr><th>G</th>'+gam1.map(v=>`<th>${(v.y?'Y':'X<sup>'+hs(v.h)+'</sup>')+(v.a?' '+al(TR[au],v.a):'')}</th>`).join('')+'</tr>'+gam0.map(u=>`<tr><th>${(u.y?'Y':'X<sup>'+hs(u.h)+'</sup>')+(u.a?' '+al(TR[au],u.a):'')}</th>`+gam1.map(v=>{const c=mk(u,v);return `<td>${SY[c.sex]} ${gX(c.X,c.kar==='XY')}${c.A?' '+aus(c.A):''}<br><small>${phOf(c.codes)}</small></td>`}).join('')+'</tr>').join('')+'</table></div>':'';
+ const tm=gam0.length*gam1.length>4,gh=s=>(s.y?ys(s.m):'X<sup>'+hs(s.h)+'</sup>')+(s.a?' '+al(TR[ai],s.a):'');
+ const tb=tm?'<h2 style="margin-top:16px">F₁ — решётка Пеннета</h2><div class="sc"><table class="pt"><tr><th>G</th>'+gam1.map(v=>`<th>${gh(v)}</th>`).join('')+'</tr>'+gam0.map(u=>`<tr><th>${gh(u)}</th>`+gam1.map(v=>{const c=mk(u,v);return `<td>${SY[c.sex]} ${gX(c.X,c.kar==='XY',c.m)}${c.A?' '+aus(c.A):''}<br><small>${phOf(c.codes)}</small></td>`}).join('')+'</tr>').join('')+'</table></div>':'';
  const ex=[];
  ex.push(`Пол потомства определяет гетерогаметный родитель ${sy(he)} (XY): половина его гамет несёт Y — из них получаются потомки XY (${sy(he)}), другая половина несёт X — из них получаются потомки XX (${sy(hi)}); X всегда достаётся от ${sy(hi)}.`);
  ex.push(`Признак 1 расположен в X-хромосоме, а в Y-хромосоме такого гена нет, поэтому у особей XY он проявляется по единственному аллелю — тому, который получен от ${sy(hi)} (XX); у особей XX проявляется сочетание двух аллелей.`);
+ if(yAct)ex.push(`Признак на Y-хромосоме (голандрическое наследование, Y<sup>*</sup>) передаётся только по мужской линии от гетерогаметного родителя ${sy(he)} (XY) всем потомкам XY; у особей XX этого признака нет, так как Y-хромосомы у них нет.`);
  if(cat)ex.push('У кошек гены рыжей и чёрной окраски находятся в X-хромосоме и действуют кодоминантно: у гетерозиготной самки X<sup>B</sup>X<sup>b</sup> проявляются оба аллеля — черепаховая окраска. У самцов XY один аллель, поэтому черепаховых самцов обычно нет.');
  if(x.AU)ex.push(x.da===2?'Аутосомный признак при неполном доминировании: гетерозигота имеет промежуточный фенотип, поэтому расщепление по фенотипу совпадает с расщеплением по генотипу (например, 1 : 2 : 1).':'Аутосомный признак находится в аутосоме и наследуется независимо от пола и от X-признака: его расщепление считается как при обычном моногибридном скрещивании и перемножается с расщеплением по полу и X-признаку.');
  if(xf){const par=[G0,G1][hi].X.map(h=>h.join('')),hom=gam([G0,G1][hi],P[hi],1,r).filter(s=>!s.y).map(s=>({k:s.h.join(''),t:'X<sup>'+hs(s.h)+'</sup>'})),u=a=>[...new Set(a)].join(', ');
   ex.push(`У ${sy(hi)} (XX) возможен кроссинговер между генами X-хромосом, его частота ${fmt(r*100)} %: помимо некроссоверных гамет (${u(hom.filter(g=>par.includes(g.k)).map(g=>g.t))}) образуются кроссоверные (${u(hom.filter(g=>!par.includes(g.k)).map(g=>g.t))}) — они дают рекомбинантных потомков. У ${sy(he)} (XY) кроссинговера между X и Y по этим генам нет.`)}
  ex.push(`Расщепление по фенотипу с учётом пола: ${rs?'<b>'+rs+'</b> — ':''}${gs.map(e=>e[0]+' ('+fr(e[1])+')').join('; ')}.${gn.length!==gs.length&&rn?' Без учёта пола: <b>'+rn+'</b>.':''}`);
- return `<h2 style="margin-top:16px">Родители</h2><div class="sch">${sy(0)} ${gOf(G0,P[0])} — ${phOf(pcodes(G0,P[0]))}<br>${sy(1)} ${gOf(G1,P[1])} — ${phOf(pcodes(G1,P[1]))}</div>
+ const h=`<h2 style="margin-top:16px">Родители</h2><div class="sch">{{F0}}${sy(0)} ${gOf(G0,P[0])} — ${phOf(pcodes(G0,P[0]))}<br>{{F1}}${sy(1)} ${gOf(G1,P[1])} — ${phOf(pcodes(G1,P[1]))}</div>
 <h2 style="margin-top:16px">Схема скрещивания</h2><div class="sch">P: ${sy(0)} ${gOf(G0,P[0])} × ${sy(1)} ${gOf(G1,P[1])}<br>G: ${sy(0)} ${gl(gam0)} | ${sy(1)} ${gl(gam1)}${tm?'':'<br>F₁:<br>'+lines}</div>${tb}${tm?'<h2 style="margin-top:16px">Классы потомства</h2><div class="sch">'+lines+'</div>':''}
-<h2 style="margin-top:16px">Расщепление</h2><div class="sch">${gs.map(e=>e[0]+' — '+fr(e[1])).join('<br>')}</div><div class="note">${ex.join(' ')}</div>${notes.map(n=>`<div class="note" style="color:var(--err)">${n}</div>`).join('')}`}
+<h2 style="margin-top:16px">Расщепление</h2><div class="sch">${gs.map(e=>e[0]+' — '+fr(e[1])).join('<br>')}</div><div class="note">${ex.join(' ')}</div>${notes.map(n=>`<div class="note" style="color:var(--err)">${n}</div>`).join('')}`;
+ return{h,e:B.e,hasRows:rows.length>0,items}}
 zRender();
-
 load();gRender();
 function go(v){$('#home').hidden=v!=='home';$('#calc').hidden=v!=='hw';$('#gen').hidden=v!=='gen';try{history.replaceState(null,'',v==='home'?location.pathname+location.search:'#'+v)}catch(e){}scrollTo(0,0)}
 try{const w=window.Telegram&&Telegram.WebApp;if(w){w.ready();w.expand();document.documentElement.dataset.theme=w.colorScheme;w.onEvent("themeChanged",()=>{document.documentElement.dataset.theme=w.colorScheme})}}catch(e){}
